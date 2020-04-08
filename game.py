@@ -79,6 +79,9 @@ class App(QMainWindow):
         for button in self.answer_buttons:
             self.answers.addWidget(button)
 
+        self.drugs = dict(drugs)
+        self.groups = list(groups)
+
         self.previous = 'drug'
         self.ask_question()
 
@@ -93,20 +96,20 @@ class App(QMainWindow):
         self.answerWidget.hide()
         self.questionWidget.show()
 
-        group_answers = list(drugs[self.group].values())
+        group_answers = list(self.drugs[self.group].values())
         options = list(range(3))
         random.shuffle(options)
-        self.answer_text = drugs[self.group][self.drug]
+        self.answer_text = self.drugs[self.group][self.drug]
 
         self.answer = options.pop()
 
         wrong_answers = list(group_answers)
-        wrong_answers.remove(drugs[self.group][self.drug])
+        wrong_answers.remove(self.drugs[self.group][self.drug])
         random.shuffle(wrong_answers)
 
         possible_answers: list = [None] * 3
 
-        possible_answers[self.answer] = drugs[self.group][self.drug]
+        possible_answers[self.answer] = self.drugs[self.group][self.drug]
 
         if len(wrong_answers) > 0:
             possible_answers[options.pop()] = wrong_answers.pop()
@@ -123,7 +126,7 @@ class App(QMainWindow):
         # self.resize(self.Layout.sizeHint())
 
     def question_group(self):
-        if sum([len(drugs[group]) for group in groups]) == 0:
+        if sum([len(self.drugs[group]) for group in self.groups]) == 0:
 
             self.result.setText('Well done, you completed all the drugs!')
             self.questionWidget.hide()
@@ -143,7 +146,7 @@ class App(QMainWindow):
 
         self.answer_text = self.group
 
-        wrong_answers = list(groups)
+        wrong_answers = list(self.groups)
         wrong_answers.remove(self.group)
         random.shuffle(wrong_answers)
 
@@ -174,10 +177,10 @@ class App(QMainWindow):
         options = list(range(3))
         random.shuffle(options)
         self.answer_text = self.drug
-        self.questionText = drugs[self.group][self.drug]
+        self.questionText = self.drugs[self.group][self.drug]
 
         self.answer = options.pop()
-        group_answers = list(drugs[self.group].keys())
+        group_answers = list(self.drugs[self.group].keys())
 
         wrong_answers = list(group_answers)
         wrong_answers.remove(self.drug)
@@ -195,7 +198,7 @@ class App(QMainWindow):
         else:
             possible_answers[options.pop()] = ''
 
-        self.question.setText('What is {}?'.format(drugs[self.group][self.drug]))
+        self.question.setText('What is {}?'.format(self.drugs[self.group][self.drug]))
 
         for i, possible_answer in enumerate(possible_answers):
             self.answer_buttons[i].setText(possible_answers[i])
@@ -203,8 +206,8 @@ class App(QMainWindow):
         self.previous = 'description'
 
     def update_answer(self):
-        self.group = random.choice(groups)
-        group_drugs = list(drugs[self.group].keys())
+        self.group = random.choice(self.groups)
+        group_drugs = list(self.drugs[self.group].keys())
         self.drug = random.choice(group_drugs)
         self.questionText = self.drug
 
@@ -220,11 +223,11 @@ class App(QMainWindow):
                     self.total_correct += 1
 
                     if self.previous != 'group':
-                        drugs[self.group].pop(self.drug)
+                        self.drugs[self.group].pop(self.drug)
                         self.progressWidget.setValue(self.progressWidget.value() + 1)
 
-                    if len(drugs[self.group]) == 0:
-                        groups.remove(self.group)
+                    if len(self.drugs[self.group]) == 0:
+                        self.groups.remove(self.group)
                 else:
                     self.result.setText('Wrong!\n\n{} is actually {}'.format(self.questionText, self.answer_text))
                     self.answerPicture.setPixmap(QPixmap(
@@ -238,7 +241,7 @@ class App(QMainWindow):
         self.total_answered += 1
 
         self.scoreWidget.setText('{} out of {} correct so far, {} drugs remaining'.format(
-            self.total_correct, self.total_answered, sum([len(drugs[group]) for group in groups])))
+            self.total_correct, self.total_answered, sum([len(self.drugs[group]) for group in self.groups])))
         self.questionWidget.hide()
         self.answerWidget.show()
         # self.resize(self.questionLayout.sizeHint())
