@@ -1,0 +1,18 @@
+name: build
+on: [push]
+
+
+jobs:
+  conda:
+    runs-on: windows-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: create environment
+        run: '%CONDA%\Scripts\activate.bat & conda env create -n drugs-quiz -f environment.yml'
+        shell: cmd
+
+      - name: build
+        run: '%CONDA%\Scripts\activate.bat drugs-quiz & pyinstaller --onefile game.py'
+        shell: cmd
