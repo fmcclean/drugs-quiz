@@ -1,6 +1,9 @@
 name: build
-on: [push]
 
+on:
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   conda:
@@ -14,5 +17,26 @@ jobs:
         shell: cmd
 
       - name: build
-        run: '%CONDA%\Scripts\activate.bat drugs-quiz & pyinstaller --onefile game.py'
+        run: '%CONDA%\Scripts\activate.bat drugs-quiz & pyinstaller --onefile app.py'
         shell: cmd
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Drugs Quiz ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/app.exe
+          asset_name: drugs-quiz.exe
+          asset_content_type: application/octet-stream
