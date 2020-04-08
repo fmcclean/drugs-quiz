@@ -91,6 +91,15 @@ class App(QMainWindow):
 
     def ask_question(self):
 
+        if sum([len(drugs[group]) for group in groups]) == 0:
+
+            self.result.setText("Well done! You got {} out of {} correct ({} %).".format(
+                self.total_correct, self.total_answered, self.total_correct/self.total_answered * 100))
+            self.questionLabel.hide()
+            self.answerWidget.show()
+            self.answer_screen_confirm.hide()
+            return
+
         if self.previous == 'group':
             self.question_drug()
         else:
@@ -115,13 +124,6 @@ class App(QMainWindow):
         # self.resize(self.Layout.sizeHint())
 
     def question_group(self):
-        if sum([len(drugs[group]) for group in groups]) == 0:
-
-            self.result.setText('Well done, you completed all the drugs!')
-            self.questionLabel.hide()
-            self.answerWidget.show()
-            self.answer_screen_confirm.hide()
-            return
 
         self.answerWidget.hide()
         self.questionWidget.show()
