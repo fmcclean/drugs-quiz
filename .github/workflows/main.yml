@@ -38,5 +38,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./dist/app.exe
-          asset_name: drugs-quiz.exe
+          asset_name: drugs-quiz-${{ github.ref }}.exe
           asset_content_type: application/octet-stream
