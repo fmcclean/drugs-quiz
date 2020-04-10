@@ -1,5 +1,5 @@
 import random
-from PyQt5.QtWidgets import QRadioButton, QDialog, QLabel, QProgressBar, QApplication, QMainWindow, QSizePolicy,\
+from PyQt5.QtWidgets import QRadioButton, QDialog, QLabel, QProgressBar, QApplication, QMainWindow, QSizePolicy, \
     QPushButton, QVBoxLayout, QWidget
 from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtCore import Qt
@@ -7,7 +7,19 @@ import sys
 import os
 import yaml
 
-with open("drugs.yml") as f:
+
+def get_path(filename):
+    try:
+        return os.path.join(sys._MEIPASS, filename)
+    except AttributeError:
+        return os.path.join('.', filename)
+
+print(os.listdir(sys._MEIPASS))
+
+images = get_path('images')
+images = [os.path.join(images, image) for image in os.listdir(images)]
+
+with open(get_path("drugs.yml")) as f:
     drugs = yaml.safe_load(f)
 
 groups = list(drugs.keys())
@@ -79,7 +91,7 @@ class App(QMainWindow):
             self.choicesLayout.addWidget(button)
 
         self.answer_idx = None
-        
+
         self.question = None
         self.answer = None
 
@@ -92,9 +104,8 @@ class App(QMainWindow):
     def ask_question(self):
 
         if sum([len(drugs[group]) for group in groups]) == 0:
-
             self.result.setText("Well done! You got {} out of {} correct ({} %).".format(
-                self.total_correct, self.total_answered, self.total_correct/self.total_answered * 100))
+                self.total_correct, self.total_answered, self.total_correct / self.total_answered * 100))
             self.questionLabel.hide()
             self.answerWidget.show()
             self.answer_screen_confirm.hide()
@@ -172,8 +183,8 @@ class App(QMainWindow):
                 if i == self.answer_idx:
                     self.result.setText('Correct! \n\n{} is {}'.format(self.question, self.answer))
                     self.answerPicture.setPixmap(QPixmap(
-                        random.choice([os.path.join('images', image) for image in os.listdir('images')
-                                       if 'chicken' in image])).scaledToHeight(200))
+                        random.choice([image for image in images if 'chicken' in os.path.basename(image)])
+                    ).scaledToHeight(200))
                     self.total_correct += 1
 
                     if self.previous != 'group':
@@ -185,8 +196,7 @@ class App(QMainWindow):
                 else:
                     self.result.setText('Wrong!\n\n{} is actually {}'.format(self.question, self.answer))
                     self.answerPicture.setPixmap(QPixmap(
-                        random.choice([os.path.join('images', image) for image in os.listdir('images')
-                                       if 'rooster' in image])
+                        random.choice([image for image in images if 'rooster' in os.path.basename(image)])
                     ).scaledToHeight(200))
                 break
 
