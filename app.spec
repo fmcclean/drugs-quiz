@@ -1,4 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
+from zipfile import ZipFile
+import os
 
 block_cipher = None
 
@@ -23,7 +25,7 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,
           [],
-          name='app',
+          name='drugs-quiz',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
@@ -31,3 +33,7 @@ exe = EXE(pyz,
           upx_exclude=[],
           runtime_tmpdir=None,
           console=False)
+
+with ZipFile('dist.zip', mode='w') as f:
+    for path in os.listdir('dist'):
+        f.write(os.path.join('dist', path))

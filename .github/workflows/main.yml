@@ -6,21 +6,9 @@ on:
       - 'v*'
 
 jobs:
-  conda:
-    runs-on: windows-latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@v2
-
-      - name: create environment
-        run: '%CONDA%\Scripts\activate.bat & conda env create -n drugs-quiz -f environment.yml'
-        shell: cmd
-
-      - name: build
-        run: '%CONDA%\Scripts\activate.bat drugs-quiz & pyinstaller app.spec'
-        shell: cmd
-
-      - name: Create Release
+  release:
+    - runs-on: ubuntu-latest
+    - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -30,13 +18,32 @@ jobs:
           release_name: Drugs Quiz ${{ github.ref }}
           draft: false
           prerelease: false
+  build:
+    strategy:
+      matrix:
+        runs-on: [windows-latest, macos-latest, ubuntu-latest]
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+          uses: actions/setup-python@v1
+          with:
+            python-version: 3.7
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: build
+        run: pyinstaller app.spec
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/app.exe
-          asset_name: drugs-quiz-${{ github.ref }}.exe
+          upload_url: https://uploads.github.com/repos/fmcclean/drugs-quiz/releases/latest/assets
+          asset_path: ./dist.zip
+          asset_name: drugs-quiz-${{ github.ref }}-${{ matrix.runs-on }}.zip
           asset_content_type: application/octet-stream
