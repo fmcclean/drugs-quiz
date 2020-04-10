@@ -7,8 +7,9 @@ on:
 
 jobs:
   release:
-    - runs-on: ubuntu-latest
-    - name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
