@@ -57,9 +57,13 @@ class App(QMainWindow):
         self.answerPicture = QLabel()
         self.answerLayout.addWidget(self.answerPicture)
 
-        self.result = QLabel()
+        self.resultLabel = QLabel()
+        self.resultLabel.setFont(QFont("Arial", 15))
+        self.resultTitleLabel = QLabel()
+        self.resultTitleLabel.setFont(QFont("Arial", 20, QFont.Bold))
         self.answer_screen_confirm = QPushButton(text='OK')
-        self.answerLayout.addWidget(self.result)
+        self.answerLayout.addWidget(self.resultTitleLabel)
+        self.answerLayout.addWidget(self.resultLabel)
         self.answerLayout.addWidget(self.answer_screen_confirm)
         # noinspection PyUnresolvedReferences
         self.answer_screen_confirm.clicked.connect(self.ask_question)
@@ -87,6 +91,7 @@ class App(QMainWindow):
 
         self.answer_buttons = [QRadioButton() for _ in range(3)]
         for button in self.answer_buttons:
+            button.setFont(QFont("Arial", 15))
             self.choicesLayout.addWidget(button)
 
         self.answer_idx = None
@@ -103,7 +108,8 @@ class App(QMainWindow):
     def ask_question(self):
 
         if sum([len(drugs[group]) for group in groups]) == 0:
-            self.result.setText("Well done! You got {} out of {} correct ({} %).".format(
+            self.resultTitleLabel.setText('Well done!')
+            self.resultLabel.setText("You got {} out of {} correct ({} %).".format(
                 self.total_correct, self.total_answered, self.total_correct / self.total_answered * 100))
             self.questionLabel.hide()
             self.answerWidget.show()
@@ -163,7 +169,7 @@ class App(QMainWindow):
 
         choices = self.generate_choices(drugs[self.group].keys())
 
-        self.questionLabel.setText(self.question)
+        self.questionLabel.setText('What drug fits the description: "{}"'.format(self.question))
 
         for i, possible_answer in enumerate(choices):
             self.answer_buttons[i].setText(choices[i])
@@ -180,7 +186,8 @@ class App(QMainWindow):
 
             if a.isChecked():
                 if i == self.answer_idx:
-                    self.result.setText('Correct! \n\n{} is {}'.format(self.question, self.answer))
+                    self.resultTitleLabel.setText('Correct!')
+                    self.resultLabel.setText('{} is {}'.format(self.question, self.answer))
                     self.answerPicture.setPixmap(QPixmap(
                         random.choice([image for image in images if 'chicken' in os.path.basename(image)])
                     ).scaledToHeight(200))
@@ -193,7 +200,10 @@ class App(QMainWindow):
                     if len(drugs[self.group]) == 0:
                         groups.remove(self.group)
                 else:
-                    self.result.setText('Wrong!\n\n{} is actually {}'.format(self.question, self.answer))
+                    self.resultTitleLabel.setText('Wrong!')
+                    self.resultLabel.setText('{} is actually {}{}'.format(self.question,
+                                                                          'in ' if self.previous == 'group' else '',
+                                                                          self.answer))
                     self.answerPicture.setPixmap(QPixmap(
                         random.choice([image for image in images if 'rooster' in os.path.basename(image)])
                     ).scaledToHeight(200))
