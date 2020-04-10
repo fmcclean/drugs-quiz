@@ -14,7 +14,6 @@ def get_path(filename):
     except AttributeError:
         return os.path.join('.', filename)
 
-print(os.listdir(sys._MEIPASS))
 
 images = get_path('images')
 images = [os.path.join(images, image) for image in os.listdir(images)]
