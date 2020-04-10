@@ -17,7 +17,7 @@ jobs:
         shell: cmd
 
       - name: build
-        run: '%CONDA%\Scripts\activate.bat drugs-quiz & pyinstaller --onefile app.py'
+        run: '%CONDA%\Scripts\activate.bat drugs-quiz & pyinstaller app.spec'
         shell: cmd
 
       - name: Create Release

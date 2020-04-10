@@ -4,7 +4,6 @@ block_cipher = None
 
 
 a = Analysis(['app.py'],
-             pathex=['/Users/fergus/Projects/Pycharm/drugs-game'],
              binaries=[],
              datas=[('images', 'images'), ('drugs.yml', '.')],
              hiddenimports=[],
