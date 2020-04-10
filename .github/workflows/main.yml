@@ -20,6 +20,7 @@ jobs:
           draft: false
           prerelease: false
   build:
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         runs-on: [windows-latest, macos-latest, ubuntu-latest]
@@ -28,9 +29,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up Python
-          uses: actions/setup-python@v1
-          with:
-            python-version: 3.7
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
