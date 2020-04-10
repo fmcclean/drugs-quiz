@@ -40,12 +40,27 @@ jobs:
       - name: build
         run: pyinstaller app.spec
 
+      - uses: actions/github-script@0.9.0
+        id: upload_url
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          result-encoding: string
+          script: |
+            const result = await github.repos.getLatestRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+
+            console.log(result)
+
+            return result.upload_url
+
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: https://uploads.github.com/repos/fmcclean/drugs-quiz/releases/latest/assets{?name,label}
+          upload_url: ${{ steps.upload_url.outputs.result }}
           asset_path: ./dist.zip
           asset_name: drugs-quiz-${{ github.ref }}-${{ matrix.os }}.zip
           asset_content_type: application/octet-stream
