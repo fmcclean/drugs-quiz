@@ -47,5 +47,5 @@ jobs:
         with:
           upload_url: https://uploads.github.com/repos/fmcclean/drugs-quiz/releases/latest/assets
           asset_path: ./dist.zip
-          asset_name: drugs-quiz-${{ github.ref }}-${{ matrix.runs-on }}.zip
+          asset_name: drugs-quiz-${{ github.ref }}-${{ matrix.os }}.zip
           asset_content_type: application/octet-stream
