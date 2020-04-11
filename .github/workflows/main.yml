@@ -41,8 +41,8 @@ jobs:
         run: pyinstaller app.spec
 
       - name: Get the version
-          id: get_version
-          run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
 
       - uses: actions/github-script@0.9.0
         id: upload_url
