@@ -54,7 +54,7 @@ jobs:
             const result = await github.repos.getReleaseByTag({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag: ${{ steps.get_version.outputs.VERSION }},
+              tag: '${{ steps.get_version.outputs.VERSION }}',
             });
 
             console.log(result.data.upload_url)
