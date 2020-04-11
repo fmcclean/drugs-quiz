@@ -46,14 +46,16 @@ jobs:
           github-token: ${{secrets.GITHUB_TOKEN}}
           result-encoding: string
           script: |
-            const result = await github.repos.getLatestRelease({
+
+            const result = await github.repos.getReleaseByTag({
               owner: context.repo.owner,
               repo: context.repo.repo,
+              tag: ${{ github.ref }},
             });
 
-            console.log(result)
+            console.log(result.data.upload_url)
 
-            return result.upload_url
+            return result.data.upload_url
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
