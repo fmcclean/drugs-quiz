@@ -46,7 +46,7 @@ jobs:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
 
-            const tag = context.payload.ref.replace(/\/refs\/tags\//, '');
+            const tag = context.payload.ref.replace('refs/tags/', '');
 
             const result = await github.repos.getReleaseByTag({
               owner: context.repo.owner,
