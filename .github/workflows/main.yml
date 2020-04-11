@@ -41,22 +41,30 @@ jobs:
         run: pyinstaller app.spec
 
       - uses: actions/github-script@0.9.0
+        name: Get version number
+        id: version
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          result-encoding: string
+          script: return context.payload.ref.replace('refs/tags/', '');
+
+      - uses: actions/github-script@0.9.0
+        name: Get upload URL
         id: upload_url
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
+          result-encoding: string
           script: |
-
-            const tag = context.payload.ref.replace('refs/tags/', '');
 
             const result = await github.repos.getReleaseByTag({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag: tag,
+              tag: '${{ steps.version.outputs.result }}',
             });
 
             console.log(result.data.upload_url)
 
-            return {upload_url: result.data.upload_url, tag: tag}
+            return result.data.upload_url
 
 
 
@@ -65,7 +73,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.upload_url.outputs.result.upload_url }}
+          upload_url: ${{ steps.upload_url.outputs.result }}
           asset_path: ./dist.zip
-          asset_name: drugs-quiz-${{ steps.upload_url.outputs.result.tag }}-${{ matrix.os }}.zip
+          asset_name: drugs-quiz-${{ steps.version.outputs.result }}-${{ matrix.os }}.zip
           asset_content_type: application/octet-stream
