@@ -40,6 +40,10 @@ jobs:
       - name: build
         run: pyinstaller app.spec
 
+      - name: Get the version
+          id: get_version
+          run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+
       - uses: actions/github-script@0.9.0
         id: upload_url
         with:
@@ -50,12 +54,14 @@ jobs:
             const result = await github.repos.getReleaseByTag({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag: ${{ github.ref }},
+              tag: ${{ steps.get_version.outputs.VERSION }},
             });
 
             console.log(result.data.upload_url)
 
             return result.data.upload_url
+
+
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
@@ -64,5 +70,5 @@ jobs:
         with:
           upload_url: ${{ steps.upload_url.outputs.result }}
           asset_path: ./dist.zip
-          asset_name: drugs-quiz-${{ github.ref }}-${{ matrix.os }}.zip
+          asset_name: drugs-quiz-${{ steps.get_version.outputs.VERSION }}-${{ matrix.os }}.zip
           asset_content_type: application/octet-stream
